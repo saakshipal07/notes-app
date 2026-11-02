@@ -5,7 +5,20 @@ import { useState } from 'react'
 function App() {
   const [title, setTitle] = useState('');
    const [details, setdetails] = useState('');
-   const [task,setTask]= useState([]);
+   const [task,setTask]= useState(()=>{
+
+   const savenotes=localStorage.getItem('d');
+   if (savenotes){
+    return JSON.parse(savenotes)
+   }
+   return []
+   });
+
+   function updatestorage(data) {
+    localStorage.setItem('d', JSON.stringify(data));
+    // console.log("datais :",d);
+    
+   }
 
 
 
@@ -24,6 +37,11 @@ function App() {
     setdetails('')
 
     setTask(newtask);
+    updatestorage(newtask)
+    //  localStorage.setItem('d', JSON.stringify(newtask));
+    //  const info=JSON.parse(localStorage.getItem('d'))
+    //  console.log(info)
+    
     
   }
   function deletetask(id){
@@ -31,7 +49,10 @@ function App() {
     const copytask=[...task];
     console.log(copytask[id]);
     copytask.splice(id,1);
-    setTask(copytask)
+    setTask(copytask);
+
+    // updatestorage(copytask)
+    updatestorage(copytask)
     // console.log("deleted.......",iid);
 
 
@@ -62,7 +83,11 @@ function App() {
       <div className=" bg-gray-900  lg:w-1/2 p-4 ">
         <h2 className="text-2xl font-bold mb-4">Your Notes</h2>
         <div className= 'flex flex-wrap gap-4 '>
-          {task.map((params,idx)=>{
+          {
+          (task.length===0)?(
+            <p> task is not available</p>
+          ):
+          task.map((params,idx)=>{
             
              return (
             <div className="bg-gray-700 p-5 rounded-xl w-50 min-h-60 gap-4  flex flex-col justify-between overflow-auto " key={idx}>
@@ -73,6 +98,8 @@ function App() {
               <button className='bg-red-500 p-2  rounded-[10px]' onClick={(e)=>{
                 deletetask(idx)
               }}>delete</button>
+
+            
         </div>
           )
           })}
